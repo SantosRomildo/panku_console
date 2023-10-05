@@ -9,7 +9,7 @@ enum InputMode {
 	Launcher
 }
 
-var gui_mode:InputMode = InputMode.Window
+var gui_mode:InputMode = InputMode.Launcher
 var pause_if_input:bool = true
 var unified_window_visibility:bool = false
 var init_expr:String = ""
@@ -54,7 +54,7 @@ func init_module():
 				simple_launcher.visible = not simple_launcher.visible
 	)
 
-	gui_mode = load_module_data("gui_mode", InputMode.Window)
+	gui_mode = load_module_data("gui_mode", InputMode.Launcher)
 	pause_if_input = load_module_data("pause_if_popup", true)
 	unified_window_visibility = load_module_data("unified_visibility", false)
 	init_expr = load_module_data("init_expression", "")
