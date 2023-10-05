@@ -26,10 +26,16 @@ func notify(any, id=-1) -> void:
 	new_notification_created.emit(text, id)
 
 func _input(event: InputEvent):
+	if !OS.is_debug_build():
+		return
+
 	if event.is_action_pressed(ToggleConsoleAction):
 		toggle_console_action_just_pressed.emit()
 
 func _ready():
+	if !OS.is_debug_build():
+		return
+
 	assert(get_tree().current_scene != self, "Do not run console.tscn as a scene!")
 
 	windows_manager = $LynxWindowsManager
@@ -41,7 +47,7 @@ func _ready():
 	if not InputMap.has_action(ToggleConsoleAction):
 		InputMap.add_action(ToggleConsoleAction)
 		var default_toggle_console_event = InputEventKey.new()
-		default_toggle_console_event.physical_keycode = KEY_QUOTELEFT
+		default_toggle_console_event.physical_keycode = KEY_F4
 		InputMap.action_add_event(ToggleConsoleAction, default_toggle_console_event)
 
 	# since panku console servers numerous purposes
@@ -52,21 +58,31 @@ func _ready():
 		PankuModuleNativeLogger.new(),
 		PankuModuleScreenNotifier.new(),
 		PankuModuleSystemReport.new(),
-		PankuModuleHistoryManager.new(),
+		#PankuModuleHistoryManager.new(),
 		PankuModuleEngineTools.new(),
 		PankuModuleKeyboardShortcuts.new(),
-		PankuModuleCheckLatestRelease.new(),
+		#PankuModuleCheckLatestRelease.new(),
 		PankuModuleInteractiveShell.new(),
 		PankuModuleGeneralSettings.new(),
 		PankuModuleDataController.new(),
-		PankuModuleScreenCrtEffect.new(),
-		PankuModuleExpressionMonitor.new(),
-		PankuModuleTextureViewer.new(),
+		#PankuModuleScreenCrtEffect.new(),
+		#PankuModuleExpressionMonitor.new(),
+		#PankuModuleTextureViewer.new(),
 		PankuModuleVariableTracker.new(),
 	]
 	module_manager.init_manager(self, modules)
+	var t:= modules[0] as PankuModuleNativeLogger
+	t.toggle_overlay()		
 
 func _notification(what):
+	if !OS.is_debug_build():
+		return
 	# quit event
 	if what == NOTIFICATION_WM_CLOSE_REQUEST:
 		module_manager.quit_modules()
+
+func _disable_modules():
+	if !OS.is_debug_build():
+		return	
+	InputMap.action_erase_events(ToggleConsoleAction)
+	module_manager.quit_modules()
